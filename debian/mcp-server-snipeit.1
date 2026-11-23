@@ -1,4 +1,4 @@
-.TH MCP-SERVER-SNIPEIT 1 "November 2026" "mcp-server-snipeit 2.0.1" "User Commands"
+.TH MCP-SERVER-SNIPEIT 1 "November 2026" "mcp-server-snipeit 2.0.2" "User Commands"
 .SH NAME
 mcp-server-snipeit \- MCP server for the Snipe-IT asset management system
 .SH SYNOPSIS
@@ -30,6 +30,12 @@ API token (secret). Required unless OAuth or multi-identity mode is used.
 .TP
 .B SNIPEIT_READ_ONLY
 When "true", every state-changing tool action is refused.
+.TP
+.B SNIPEIT_FILE_ROOT
+Directory local file access is confined to; without it downloads are refused in read-only mode.
+.TP
+.B SNIPEIT_TIMEOUT
+Timeout of one direct API request in seconds (default 30).
 .TP
 .B SNIPEIT_ALLOWED_TOOLS
 Comma-separated tool allowlist.

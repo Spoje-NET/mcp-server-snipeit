@@ -82,11 +82,17 @@ def _build_identity_middleware(cfg):
 
 def _read_only_enabled() -> bool:
     """``SNIPEIT_READ_ONLY=true`` blocks every state-changing tool action."""
-    return os.getenv("SNIPEIT_READ_ONLY", "").strip().lower() in {"1", "true", "yes", "on"}
+    value = os.getenv("SNIPEIT_READ_ONLY", "").strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True
+    if value in {"", "0", "false", "no", "off"}:
+        return False
+    # A typo must not silently enable writes.
+    raise ValueError("SNIPEIT_READ_ONLY must be true or false")
 
 
 def _build_read_only_middleware():
-    """Middleware rejecting WRITE_ACTIONS when ``SNIPEIT_READ_ONLY`` is set.
+    """Middleware allowing only reads when ``SNIPEIT_READ_ONLY`` is set.
 
     Snipe-IT tools are multiplexed (``manage_assets(action=...)``), so a
     mutating tool cannot simply be left unregistered without also losing its
@@ -103,7 +109,18 @@ _auth_config = _load_auth_config()
 _auth_provider = _build_auth_provider(_auth_config)
 _identity_middleware = _build_identity_middleware(_auth_config)
 _read_only_middleware = _build_read_only_middleware()
-_extra_middleware = [m for m in (_identity_middleware, _read_only_middleware) if m is not None]
+
+
+def _build_file_root_middleware():
+    """Middleware confining local file access when ``SNIPEIT_FILE_ROOT`` is set."""
+    from .http_auth import FileRootMiddleware, file_root  # noqa: PLC0415
+
+    return FileRootMiddleware() if file_root() is not None else None
+
+
+_extra_middleware = [
+    m for m in (_identity_middleware, _read_only_middleware, _build_file_root_middleware()) if m is not None
+]
 
 if _auth_provider is not None:
     logger.info("Snipe-IT OAuth provider configured (interactive login enabled)")

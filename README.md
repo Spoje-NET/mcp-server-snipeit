@@ -77,14 +77,13 @@ sudo apt install mcp-server-snipeit mcprack-mcp-server-snipeit
 
 The binary is `/usr/bin/mcp-server-snipeit` (`snipeit-mcp` is kept as an alias).
 It needs `python3-fastmcp (>= 4.1.4)` and `python3-snipeit-api (>= 0.5.2)`.
-Upstream base: jameshgordy/snipeit-mcp 2.0.1 (2e35de1, 2026-11-13).
+Upstream base: jameshgordy/snipeit-mcp 2.0.2 (45952f7, 2026-11-16), last synchronised 2026-11-23.
 
 ### Read-only mode
 
-`SNIPEIT_READ_ONLY=true` refuses every state-changing action
-(`create`, `update`, `delete`, `checkout`, `checkin`, `audit`, `restore`,
-`upload`, `sync`, ...). Snipe-IT tools are multiplexed by an `action`
-argument, so tools stay listed and the write *actions* are rejected.
+`SNIPEIT_READ_ONLY=true` allows only read tools and known read actions
+(`READ_ACTIONS` in `http_auth.py`); everything else is refused, including file
+downloads unless `SNIPEIT_FILE_ROOT` is set. A mistyped value refuses to start.
 
 ### Environment variables
 
@@ -93,6 +92,8 @@ argument, so tools stay listed and the write *actions* are rejected.
 | `SNIPEIT_URL` | no | Snipe-IT base URL (required) |
 | `SNIPEIT_TOKEN` | yes | API token (single-identity mode) |
 | `SNIPEIT_READ_ONLY` | no | Refuse state-changing actions |
+| `SNIPEIT_FILE_ROOT` | no | Directory local file uploads and downloads are confined to. Without it downloads are refused in read-only mode |
+| `SNIPEIT_TIMEOUT` | no | Timeout of one direct API request in seconds (default 30) |
 | `SNIPEIT_ALLOWED_TOOLS` | no | Tool allowlist |
 | `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | no | Transport (stdio default) |
 | `MCP_TOKEN` | yes | Bearer token for the http transport |

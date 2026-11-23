@@ -5,7 +5,16 @@ All notable changes to the Snipe-IT MCP Server will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (Vitexus fork, 2.0.1-1)
+## [Unreleased] (Vitexus fork, 2.0.2-1)
+
+### Security
+- `SNIPEIT_READ_ONLY` now allows only known read actions instead of refusing known write
+  actions; `asset_labels` could write a file in read-only mode. A mistyped value refuses to start.
+- `SNIPEIT_FILE_ROOT` confines all local file access. Without it, downloads are refused in
+  read-only mode, because they could overwrite any file of the server's user.
+- Direct API requests have a timeout (`SNIPEIT_TIMEOUT`, default 30 s).
+
+## (Vitexus fork, 2.0.1-1)
 
 ### Added
 - Debian packaging (`mcp-server-snipeit`, companion `mcprack-mcp-server-snipeit`).
@@ -17,6 +26,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Module renamed `snipeit_mcp` -> `mcp_server_snipeit`; binary `mcp-server-snipeit`
   (`snipeit-mcp` kept as alias).
 - HTTP end-to-end tests are opt-in (`SNIPEIT_RUN_HTTP_E2E=1`).
+
+## [2.0.2] - 2026-11-16
+
+### Fixed
+- `manage_fields` `associate` and `disassociate` called routes that do not exist
+  in Snipe-IT (`fields/{id}/associate/{fieldset_id}`), so both actions always
+  failed. They now POST to `fields/{id}/associate` and `fields/{id}/disassociate`
+  with `fieldset_id` in the request body, as verified against Snipe-IT v8.8.3.
+  Thanks to @dillon-e (#38).
 
 ## [2.0.1] - 2026-11-13
 
@@ -393,6 +411,7 @@ capability. Existing configurations, tools, and payloads behave exactly as in
 - UV package manager support
 - Stdio transport for MCP communication
 
+[2.0.2]: https://github.com/jameshgordy/snipeit-mcp/releases/tag/2.0.2
 [2.0.1]: https://github.com/jameshgordy/snipeit-mcp/releases/tag/2.0.1
 [1.9.5]: https://github.com/jameshgordy/snipeit-mcp/releases/tag/1.9.5
 [1.9.4]: https://github.com/jameshgordy/snipeit-mcp/releases/tag/1.9.4

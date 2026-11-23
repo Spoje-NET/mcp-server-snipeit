@@ -27,8 +27,10 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Sequence
 
 from fastmcp.server.middleware import Middleware, MiddlewareContext
@@ -68,6 +70,69 @@ WRITE_ACTIONS: frozenset[str] = frozenset(
         "process",
     }
 )
+
+
+# Actions allowed in server-wide read-only mode on tools that can also write.
+# An allowlist: an action added later is refused until it is classified here.
+READ_ACTIONS: frozenset[str] = frozenset(
+    {
+        "assets",
+        "fields",
+        "get",
+        "list",
+        "list_assets",
+        "list_checkouts",
+        "list_items",
+        "me",
+        "requestable",
+        "test",
+        "users",
+    }
+)
+
+# Tool parameters naming files on the server's own disk.
+PATH_PARAMETERS = ("save_path", "file_path", "file_paths")
+
+
+def file_root() -> Path | None:
+    """Directory local file access is confined to (``SNIPEIT_FILE_ROOT``)."""
+    value = os.getenv("SNIPEIT_FILE_ROOT", "").strip()
+    return Path(value).resolve() if value else None
+
+
+def _check_path(root: Path, value: Any) -> None:
+    if not isinstance(value, str):
+        raise PermissionError("File paths must be strings.")
+    # resolve() follows symlinks, so a link inside the root cannot lead out
+    path = Path(value)
+    if not path.is_absolute() or not path.resolve().is_relative_to(root):
+        raise PermissionError("File access is limited to absolute paths inside SNIPEIT_FILE_ROOT.")
+
+
+async def _tool_of(context: MiddlewareContext) -> Any:
+    if context.fastmcp_context is None:
+        return None
+    return await context.fastmcp_context.fastmcp.get_tool(context.message.name)
+
+
+class FileRootMiddleware(Middleware):
+    """Confine tool parameters naming local files to ``SNIPEIT_FILE_ROOT``."""
+
+    async def on_call_tool(self, context: MiddlewareContext[CallToolRequestParams], call_next: Any) -> Any:
+        root = file_root()
+        if root is not None:
+            arguments = context.message.arguments or {}
+            tool = await _tool_of(context)
+            properties = (tool.parameters.get("properties") or {}) if tool else {}
+            for name in PATH_PARAMETERS:
+                value = arguments.get(name)
+                if value is None:
+                    # the tool would fall back to its own default path
+                    value = (properties.get(name) or {}).get("default")
+                for item in value if isinstance(value, list) else [value]:
+                    if item is not None:
+                        _check_path(root, item)
+        return await call_next(context)
 
 
 def _extract_bearer_token(headers: Sequence[tuple[bytes, bytes]]) -> str | None:
@@ -153,7 +218,7 @@ def _args_digest(arguments: Any) -> str:
 
 
 class ReadOnlyToolMiddleware(Middleware):
-    """Refuse every write action (``SNIPEIT_READ_ONLY=true``)."""
+    """Refuse everything but reads (``SNIPEIT_READ_ONLY=true``)."""
 
     async def on_call_tool(
         self,
@@ -162,9 +227,14 @@ class ReadOnlyToolMiddleware(Middleware):
     ) -> Any:
         arguments = context.message.arguments or {}
         action = arguments.get("action") if isinstance(arguments, dict) else None
-        if isinstance(action, str) and action in WRITE_ACTIONS:
+        tool = await _tool_of(context)
+        annotations = getattr(tool, "annotations", None)
+        read_tool = annotations is not None and annotations.read_only_hint is True
+        # Downloads write to the server's disk: only into a configured directory.
+        download = action == "download" and file_root() is not None
+        if not (action in READ_ACTIONS or download or (read_tool and action not in WRITE_ACTIONS)):
             raise PermissionError(
-                f"Action '{action}' modifies Snipe-IT state and is blocked: "
+                f"Action '{action or context.message.name}' is blocked: "
                 "the server runs in read-only mode (SNIPEIT_READ_ONLY=true)."
             )
         return await call_next(context)

@@ -3,7 +3,7 @@
   "name": "io.github.vitexsoftware/mcp-server-snipeit",
   "title": "Snipe-IT MCP Server",
   "description": "Manage Snipe-IT assets, licenses and users from an AI assistant.",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "websiteUrl": "https://github.com/Vitexus/mcp-server-snipeit",
   "repository": {
     "url": "https://github.com/Vitexus/mcp-server-snipeit",
@@ -13,7 +13,7 @@
     {
       "registryType": "pypi",
       "identifier": "mcp-server-snipeit",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "transport": {
         "type": "stdio"
       },
@@ -40,6 +40,19 @@
             "true",
             "false"
           ]
+        },
+        {
+          "name": "SNIPEIT_FILE_ROOT",
+          "description": "Directory local file uploads and downloads are confined to; without it downloads are refused in read-only mode",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "SNIPEIT_TIMEOUT",
+          "description": "Timeout of one direct API request in seconds",
+          "default": "30",
+          "isRequired": false,
+          "isSecret": false
         },
         {
           "name": "SNIPEIT_ALLOWED_TOOLS",

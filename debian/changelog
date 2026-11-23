@@ -1,3 +1,14 @@
+mcp-server-snipeit (2.0.2-1) unstable; urgency=medium
+
+  * Merge upstream 2.0.2 (45952f7, 2026-11-16), last sync 2026-11-23:
+    fix of custom field association.
+  * Read-only mode allows only known read actions; asset_labels no
+    longer writes files.
+  * Add SNIPEIT_FILE_ROOT (confines local file access) and
+    SNIPEIT_TIMEOUT.
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Mon, 23 Nov 2026 16:38:46 +0100
+
 mcp-server-snipeit (2.0.1-1) unstable; urgency=medium
 
   * Initial Debian packaging of jameshgordy/snipeit-mcp 2.0.1 (MIT).

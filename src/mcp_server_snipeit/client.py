@@ -94,6 +94,14 @@ def _require_url_and_token() -> tuple[str, str]:
     return url, creds
 
 
+def _timeout() -> float:
+    """Timeout of one direct API request in seconds (``SNIPEIT_TIMEOUT``)."""
+    value = float(os.getenv("SNIPEIT_TIMEOUT") or 30)
+    if not 0 < value <= 600:
+        raise SnipeITException("SNIPEIT_TIMEOUT must be between 0 and 600 seconds")
+    return value
+
+
 def get_snipeit_client() -> SnipeIT:
     """Get or create a Snipe-IT client instance for the current call."""
     url, creds = _require_url_and_token()
@@ -116,7 +124,8 @@ class SnipeITDirectAPI:
                  **kwargs) -> dict:
         """Make an API request and handle errors."""
         url = f"{self.base_url}/api/v1/{endpoint}"
-        response = requests.request(method, url, headers=headers or self.headers, **kwargs)
+        response = requests.request(method, url, headers=headers or self.headers,
+                                    timeout=_timeout(), **kwargs)
 
         if response.status_code == 404:
             raise SnipeITNotFoundError(f"Resource not found: {endpoint}")
@@ -213,7 +222,7 @@ class SnipeITDirectAPI:
         url = f"{self.base_url}/api/v1/{endpoint}"
         headers = {"Authorization": self.headers["Authorization"],
                    "Accept": "application/octet-stream"}
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=_timeout())
         if response.status_code == 404:
             raise SnipeITNotFoundError(f"Resource not found: {endpoint}")
         if response.status_code == 401:
