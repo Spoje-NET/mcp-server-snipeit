@@ -17,7 +17,7 @@ test = ["pytest>=7.0.0", "pytest-asyncio>=0.21.0", "responses>=0.23.0"]
 
 [project.urls]
 Homepage = "https://github.com/jameshgordy/snipeit-mcp"
-Repository = "https://github.com/Vitexus/mcp-server-snipeit"
+Repository = "https://github.com/Spoje-NET/mcp-server-snipeit"
 Upstream = "https://github.com/jameshgordy/snipeit-mcp"
 Issues = "https://github.com/jameshgordy/snipeit-mcp/issues"
 

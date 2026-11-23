@@ -20,9 +20,9 @@
   <developer id="cz.vitexsoftware">
     <name>Vitex Software</name>
   </developer>
-  <url type="homepage">https://github.com/Vitexus/mcp-server-snipeit</url>
-  <url type="vcs-browser">https://github.com/Vitexus/mcp-server-snipeit</url>
-  <url type="bugtracker">https://github.com/Vitexus/mcp-server-snipeit/issues</url>
+  <url type="homepage">https://github.com/Spoje-NET/mcp-server-snipeit</url>
+  <url type="vcs-browser">https://github.com/Spoje-NET/mcp-server-snipeit</url>
+  <url type="bugtracker">https://github.com/Spoje-NET/mcp-server-snipeit/issues</url>
   <provides>
     <binary>mcp-server-snipeit</binary>
   </provides>

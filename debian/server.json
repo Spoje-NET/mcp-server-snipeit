@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.vitexsoftware/mcp-server-snipeit",
+  "name": "io.github.spoje-net/mcp-server-snipeit",
   "title": "Snipe-IT MCP Server",
   "description": "Manage Snipe-IT assets, licenses and users from an AI assistant.",
   "version": "2.0.2",
-  "websiteUrl": "https://github.com/Vitexus/mcp-server-snipeit",
+  "websiteUrl": "https://github.com/Spoje-NET/mcp-server-snipeit",
   "repository": {
-    "url": "https://github.com/Vitexus/mcp-server-snipeit",
+    "url": "https://github.com/Spoje-NET/mcp-server-snipeit",
     "source": "github"
   },
   "packages": [

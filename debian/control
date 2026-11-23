@@ -10,9 +10,9 @@ Build-Depends:
  python3-all,
  python3-setuptools,
 Standards-Version: 4.7.0
-Homepage: https://github.com/Vitexus/mcp-server-snipeit
-Vcs-Git: https://github.com/Vitexus/mcp-server-snipeit.git
-Vcs-Browser: https://github.com/Vitexus/mcp-server-snipeit
+Homepage: https://github.com/Spoje-NET/mcp-server-snipeit
+Vcs-Git: https://github.com/Spoje-NET/mcp-server-snipeit.git
+Vcs-Browser: https://github.com/Spoje-NET/mcp-server-snipeit
 Rules-Requires-Root: no
 
 Package: mcp-server-snipeit

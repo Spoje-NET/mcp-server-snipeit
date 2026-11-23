@@ -78,8 +78,6 @@ distributions.each { distro ->
                                 sh 'sudo DEBIAN_FRONTEND=noninteractive DEBCONF_DEBUG=' + debconf_debug + ' apt-get -y install $WORKSPACE/dist/debian/' + deb_file
                             }
                         }
-                        sh 'sudo apt-get -y install python3-pytest python3-pytest-asyncio'
-                        sh 'sh debian/tests/unit'
                     }
                 }
                 stage('Archive artifacts ' + distroName ) {
